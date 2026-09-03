@@ -14,6 +14,14 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+
     env:
       APP_ENV: testing
 
@@ -25,8 +33,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
+          python-version: ${{ matrix.python-version }}
+          cache: pip
           cache-dependency-path: requirements.txt
 
       - name: Install dependencies
@@ -34,14 +42,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Lint code
-        run: python -m ruff check .
+      - name: Run linting
+        run: ruff check .
+
+      - name: Check environment
+        run: echo "Environment is $APP_ENV"
 
       - name: Run tests
         run: python -m pytest --html=report.html --self-contained-html
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-report
+          name: pytest-report-${{ matrix.python-version }}
           path: report.html
