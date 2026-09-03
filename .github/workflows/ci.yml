@@ -58,60 +58,20 @@ jobs:
           name: pytest-report-${{ matrix.python-version }}
           path: report.html
 
-  build:
 
-    runs-on: ubuntu-latest
+  
+
+
+  docker-build:
 
     needs: test
+
+    runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install build
-        run: python -m pip install --upgrade pip build
-
-      - name: Build package
-        run: python -m build
-
-      - name: Upload built package
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-package
-          path: dist/*
-  deploy:
-
-    needs: build
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: python-build
-          path: dist/
-
-      - name: Show artifact
-        run: ls -R dist/
-
-      - name: Deploy application
-        run: echo "Deploying application..."
-  docker-build:
-  needs: test
-  runs-on: ubuntu-latest
-
-  steps:
-
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Build Docker image
-      run: docker build -t github-actions-demo:latest .
+      - name: Build Docker image
+        run: docker build -t github-actions-demo:latest .
