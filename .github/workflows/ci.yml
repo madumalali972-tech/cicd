@@ -57,3 +57,12 @@ jobs:
         with:
           name: pytest-report-${{ matrix.python-version }}
           path: report.html
+
+      - name: Build package
+        run: python -m build
+      - name: Upload built package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-package-${{ matrix.python-version }}
+          path: dist/*
